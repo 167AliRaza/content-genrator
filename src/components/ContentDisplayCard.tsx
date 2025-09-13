@@ -3,7 +3,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Copy } from "lucide-react";
+import { Copy, BookOpen, Twitter, Facebook, Linkedin, Mail, Link } from "lucide-react"; // Import new icons
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,6 +24,23 @@ const ContentDisplayCard: React.FC<ContentDisplayCardProps> = ({
     toast.success("Content copied to clipboard!");
   };
 
+  const ContentTypeIcon = () => {
+    switch (contentType) {
+      case "blog":
+        return <BookOpen className="h-4 w-4 mr-2" />;
+      case "x":
+        return <Twitter className="h-4 w-4 mr-2" />;
+      case "facebook":
+        return <Facebook className="h-4 w-4 mr-2" />;
+      case "linkedin":
+        return <Linkedin className="h-4 w-4 mr-2" />;
+      case "newsletter":
+        return <Mail className="h-4 w-4 mr-2" />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -40,10 +57,14 @@ const ContentDisplayCard: React.FC<ContentDisplayCardProps> = ({
               <span className="sr-only">Copy to clipboard</span>
             </Button>
           </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            From: <a href={url} target="_blank" rel="noopener noreferrer" className="underline">{url}</a>
+          <p className="text-sm text-muted-foreground flex items-center">
+            From:{" "}
+            <a href={url} target="_blank" rel="noopener noreferrer" className="underline flex items-center ml-1">
+              {url} <Link className="h-3 w-3 ml-1" />
+            </a>
           </p>
-          <p className="text-sm text-muted-foreground capitalize">
+          <p className="text-sm text-muted-foreground capitalize flex items-center">
+            <ContentTypeIcon />
             Type: {contentType}
           </p>
         </CardHeader>
