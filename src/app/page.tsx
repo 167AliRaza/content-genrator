@@ -101,10 +101,8 @@ export default function Home() {
             contentType={generatedContent.content_type}
           />
         )}
-      </motion.main>
-      <div className="mt-8">
         <MadeWithDyad />
-      </div>
+      </motion.main>
     </div>
   );
 }
