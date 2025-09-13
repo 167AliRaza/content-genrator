@@ -73,7 +73,7 @@ export default function Home() {
         transition={{ duration: 0.5 }}
         className="flex flex-col gap-8 items-center w-full max-w-xl p-6 sm:p-8 bg-card rounded-lg shadow-lg"
       >
-        <h1 className="text-3xl font-bold text-center text-primary-foreground">
+        <h1 className="text-3xl font-bold text-center text-foreground">
           AI Content Generator
         </h1>
         <p className="text-center text-muted-foreground max-w-prose">
