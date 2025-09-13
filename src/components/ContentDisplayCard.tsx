@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Copy, BookOpen, Twitter, Facebook, Linkedin, Mail, Link } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { Components } from "react-markdown"; // Import Components type
 import remarkGfm from "remark-gfm";
 
 type ContentDisplayCardProps = {
@@ -16,7 +16,7 @@ type ContentDisplayCardProps = {
 };
 
 // Define custom components for markdown rendering with Tailwind CSS
-const markdownComponents = {
+const markdownComponents: Components = { // Type markdownComponents as Components
   h1: ({ node, ...props }) => <h1 className="text-3xl font-bold mt-6 mb-3" {...props} />,
   h2: ({ node, ...props }) => <h2 className="text-2xl font-semibold mt-5 mb-2" {...props} />,
   h3: ({ node, ...props }) => <h3 className="text-xl font-medium mt-4 mb-2" {...props} />,
@@ -26,7 +26,7 @@ const markdownComponents = {
   li: ({ node, ...props }) => <li className="mb-1" {...props} />,
   a: ({ node, ...props }) => <a className="text-blue-600 hover:underline dark:text-blue-400" target="_blank" rel="noopener noreferrer" {...props} />,
   blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-gray-300 pl-4 italic text-gray-600 dark:border-gray-700 dark:text-gray-400 my-4" {...props} />,
-  code: ({ node, inline, ...props }) => (
+  code: ({ node, inline, ...props }) => ( // 'inline' also needs to be typed implicitly, but Components type handles it
     <code className={`rounded-md px-1 py-0.5 text-sm ${inline ? "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200" : ""}`} {...props} />
   ),
   pre: ({ node, ...props }) => (
@@ -68,7 +68,7 @@ const ContentDisplayCard: React.FC<ContentDisplayCardProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full" // Removed max-w-xl here to allow it to expand with parent
+      className="w-full"
     >
       <Card>
         <CardHeader>
@@ -90,7 +90,7 @@ const ContentDisplayCard: React.FC<ContentDisplayCardProps> = ({
             Type: {contentType}
           </p>
         </CardHeader>
-        <CardContent className="text-base"> {/* Apply general text styling */}
+        <CardContent className="text-base">
           <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
             {content}
           </ReactMarkdown>
