@@ -7,6 +7,7 @@ import ContentDisplayCard from "@/components/ContentDisplayCard";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { ThemeToggle } from "@/components/theme-toggle"; // Import ThemeToggle
 
 type GeneratedContent = {
   url: string;
@@ -56,7 +57,10 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-8 font-[family-name:var(--font-geist-sans)] bg-background text-foreground">
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-8 font-[family-name:var(--font-geist-sans)] bg-background text-foreground relative">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
       <motion.main
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
