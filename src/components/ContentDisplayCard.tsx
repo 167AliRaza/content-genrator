@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import ReactMarkdown, { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Element } from 'hast'; // Import Element from hast
+import { Element } from 'hast'; // Re-import Element from hast
 
 type ContentDisplayCardProps = {
   content: string;
@@ -16,28 +16,27 @@ type ContentDisplayCardProps = {
   contentType: string;
 };
 
-// Define a type for the props passed to custom markdown components
-// This combines the standard HTML attributes with the 'node' prop from react-markdown
-type CustomMarkdownProps<T extends HTMLElement> = React.DetailedHTMLProps<React.HTMLAttributes<T>, T> & {
+// Define a specific interface for the props passed to custom markdown components
+interface MarkdownComponentProps extends React.HTMLAttributes<HTMLElement> {
   node: Element;
-  inline?: boolean; // Specifically for code blocks
-};
+  inline?: boolean;
+}
 
 // Define custom components for markdown rendering with Tailwind CSS
 const markdownComponents: Components = {
-  h1: ({ node, ...props }: CustomMarkdownProps<HTMLHeadingElement>) => <h1 className="text-3xl font-bold mt-6 mb-3" {...props} />,
-  h2: ({ node, ...props }: CustomMarkdownProps<HTMLHeadingElement>) => <h2 className="text-2xl font-semibold mt-5 mb-2" {...props} />,
-  h3: ({ node, ...props }: CustomMarkdownProps<HTMLHeadingElement>) => <h3 className="text-xl font-medium mt-4 mb-2" {...props} />,
-  p: ({ node, ...props }: CustomMarkdownProps<HTMLParagraphElement>) => <p className="mb-4 leading-relaxed" {...props} />,
-  ul: ({ node, ...props }: CustomMarkdownProps<HTMLUListElement>) => <ul className="list-disc pl-6 mb-4 space-y-1" {...props} />,
-  ol: ({ node, ...props }: CustomMarkdownProps<HTMLOListElement>) => <ol className="list-decimal pl-6 mb-4 space-y-1" {...props} />,
-  li: ({ node, ...props }: CustomMarkdownProps<HTMLLIElement>) => <li className="mb-1" {...props} />,
-  a: ({ node, ...props }: CustomMarkdownProps<HTMLAnchorElement>) => <a className="text-blue-600 hover:underline dark:text-blue-400" target="_blank" rel="noopener noreferrer" {...props} />,
-  blockquote: ({ node, ...props }: CustomMarkdownProps<HTMLQuoteElement>) => <blockquote className="border-l-4 border-gray-300 pl-4 italic text-gray-600 dark:border-gray-700 dark:text-gray-400 my-4" {...props} />,
-  code: ({ node, inline, ...props }: CustomMarkdownProps<HTMLElement>) => ( // HTMLElement for generic code block
+  h1: ({ node, ...props }: MarkdownComponentProps) => <h1 className="text-3xl font-bold mt-6 mb-3" {...props} />,
+  h2: ({ node, ...props }: MarkdownComponentProps) => <h2 className="text-2xl font-semibold mt-5 mb-2" {...props} />,
+  h3: ({ node, ...props }: MarkdownComponentProps) => <h3 className="text-xl font-medium mt-4 mb-2" {...props} />,
+  p: ({ node, ...props }: MarkdownComponentProps) => <p className="mb-4 leading-relaxed" {...props} />,
+  ul: ({ node, ...props }: MarkdownComponentProps) => <ul className="list-disc pl-6 mb-4 space-y-1" {...props} />,
+  ol: ({ node, ...props }: MarkdownComponentProps) => <ol className="list-decimal pl-6 mb-4 space-y-1" {...props} />,
+  li: ({ node, ...props }: MarkdownComponentProps) => <li className="mb-1" {...props} />,
+  a: ({ node, ...props }: MarkdownComponentProps) => <a className="text-blue-600 hover:underline dark:text-blue-400" target="_blank" rel="noopener noreferrer" {...props} />,
+  blockquote: ({ node, ...props }: MarkdownComponentProps) => <blockquote className="border-l-4 border-gray-300 pl-4 italic text-gray-600 dark:border-gray-700 dark:text-gray-400 my-4" {...props} />,
+  code: ({ node, inline, ...props }: MarkdownComponentProps) => (
     <code className={`rounded-md px-1 py-0.5 text-sm ${inline ? "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200" : ""}`} {...props} />
   ),
-  pre: ({ node, ...props }: CustomMarkdownProps<HTMLPreElement>) => (
+  pre: ({ node, ...props }: MarkdownComponentProps) => (
     <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-x-auto my-4">
       <code {...props} />
     </pre>
