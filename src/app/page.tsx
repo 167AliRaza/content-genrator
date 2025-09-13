@@ -7,7 +7,7 @@ import ContentDisplayCard from "@/components/ContentDisplayCard";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { ThemeToggle } from "@/components/theme-toggle"; // Import ThemeToggle
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type GeneratedContent = {
   url: string;
@@ -56,6 +56,12 @@ export default function Home() {
     }
   };
 
+  const handleReset = () => {
+    setGeneratedContent(null);
+    setError(null);
+    // The form itself will reset its fields via form.reset() in ContentGeneratorForm
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-8 font-[family-name:var(--font-geist-sans)] bg-background text-foreground relative">
       <div className="absolute top-4 right-4">
@@ -71,7 +77,7 @@ export default function Home() {
           AI Content Generator
         </h1>
 
-        <ContentGeneratorForm onSubmit={handleSubmit} isLoading={isLoading} />
+        <ContentGeneratorForm onSubmit={handleSubmit} onReset={handleReset} isLoading={isLoading} />
 
         {isLoading && <LoadingSpinner />}
 

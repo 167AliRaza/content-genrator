@@ -28,11 +28,13 @@ const formSchema = z.object({
 
 type ContentGeneratorFormProps = {
   onSubmit: (data: z.infer<typeof formSchema>) => void;
+  onReset: () => void; // Add onReset prop
   isLoading: boolean;
 };
 
 const ContentGeneratorForm: React.FC<ContentGeneratorFormProps> = ({
   onSubmit,
+  onReset,
   isLoading,
 }) => {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -42,6 +44,11 @@ const ContentGeneratorForm: React.FC<ContentGeneratorFormProps> = ({
       content_type: undefined,
     },
   });
+
+  const handleReset = () => {
+    form.reset(); // Reset form fields
+    onReset(); // Call the parent's reset handler
+  };
 
   return (
     <Form {...form}>
@@ -89,9 +96,14 @@ const ContentGeneratorForm: React.FC<ContentGeneratorFormProps> = ({
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Generating..." : "Generate Content"}
-        </Button>
+        <div className="flex gap-4">
+          <Button type="submit" className="flex-1" disabled={isLoading}>
+            {isLoading ? "Generating..." : "Generate Content"}
+          </Button>
+          <Button type="button" variant="outline" onClick={handleReset} disabled={isLoading}>
+            Reset
+          </Button>
+        </div>
       </form>
     </Form>
   );
