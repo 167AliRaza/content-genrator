@@ -76,6 +76,9 @@ export default function Home() {
         <h1 className="text-3xl font-bold text-center text-primary-foreground">
           AI Content Generator
         </h1>
+        <p className="text-center text-muted-foreground max-w-prose">
+          Enter a URL and select a content type to generate engaging text for your blog, social media, or newsletter.
+        </p>
 
         <ContentGeneratorForm onSubmit={handleSubmit} onReset={handleReset} isLoading={isLoading} />
 
