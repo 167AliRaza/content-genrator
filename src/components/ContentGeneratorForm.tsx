@@ -52,7 +52,7 @@ const ContentGeneratorForm: React.FC<ContentGeneratorFormProps> = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full max-w-md">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full max-w-xl">
         <FormField
           control={form.control}
           name="url"
