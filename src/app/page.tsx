@@ -62,6 +62,10 @@ export default function Home() {
     // The form itself will reset its fields via form.reset() in ContentGeneratorForm
   };
 
+  const mainClasses = `flex flex-col gap-8 items-center w-full p-6 sm:p-8 bg-card rounded-lg shadow-lg ${
+    generatedContent ? "max-w-4xl" : "max-w-xl"
+  }`;
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-8 font-[family-name:var(--font-geist-sans)] bg-background text-foreground relative">
       <div className="absolute top-4 right-4">
@@ -71,7 +75,7 @@ export default function Home() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex flex-col gap-8 items-center w-full max-w-xl p-6 sm:p-8 bg-card rounded-lg shadow-lg"
+        className={mainClasses}
       >
         <h1 className="text-3xl font-bold text-center text-foreground">
           AI Content Generator
