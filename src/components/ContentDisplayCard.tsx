@@ -8,35 +8,36 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import ReactMarkdown, { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Element } from 'hast';
 
 type ContentDisplayCardProps = {
   content: string;
   url: string;
   contentType: string;
+  image_url: string | null; // New prop for image URL
 };
 
-// Define custom components for markdown rendering with Tailwind CSS
+interface CustomMarkdownComponentProps<T extends HTMLElement> extends React.HTMLAttributes<T> {
+  node: Element;
+  inline?: boolean;
+}
+
 const markdownComponents: Components = {
-  h1: ({ children, ...props }) => <h1 className="text-3xl font-bold mt-6 mb-3" {...props}>{children}</h1>,
-  h2: ({ children, ...props }) => <h2 className="text-2xl font-semibold mt-5 mb-2" {...props}>{children}</h2>,
-  h3: ({ children, ...props }) => <h3 className="text-xl font-medium mt-4 mb-2" {...props}>{children}</h3>,
-  p: ({ children, ...props }) => <p className="mb-4 leading-relaxed" {...props}>{children}</p>,
-  ul: ({ children, ...props }) => <ul className="list-disc pl-6 mb-4 space-y-1" {...props}>{children}</ul>,
-  ol: ({ children, ...props }) => <ol className="list-decimal pl-6 mb-4 space-y-1" {...props}>{children}</ol>,
-  li: ({ children, ...props }) => <li className="mb-1" {...props}>{children}</li>,
-  a: ({ children, ...props }) => <a className="text-blue-600 hover:underline dark:text-blue-400" target="_blank" rel="noopener noreferrer" {...props}>{children}</a>,
-  blockquote: ({ children, ...props }) => <blockquote className="border-l-4 border-gray-300 pl-4 italic text-gray-600 dark:border-gray-700 dark:text-gray-400 my-4" {...props}>{children}</blockquote>,
-  code: ({ children, ...props }: any) => {
-    const isInline = props.inline;
-    return (
-      <code className={`rounded-md px-1 py-0.5 text-sm ${isInline ? "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200" : ""}`} {...props}>
-        {children}
-      </code>
-    );
-  },
-  pre: ({ children, ...props }) => (
-    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-x-auto my-4" {...props}>
-      <code>{children}</code>
+  h1: ({ node, ...props }: CustomMarkdownComponentProps<HTMLHeadingElement>) => <h1 className="text-3xl font-bold mt-6 mb-3" {...props} />,
+  h2: ({ node, ...props }: CustomMarkdownComponentProps<HTMLHeadingElement>) => <h2 className="text-2xl font-semibold mt-5 mb-2" {...props} />,
+  h3: ({ node, ...props }: CustomMarkdownComponentProps<HTMLHeadingElement>) => <h3 className="text-xl font-medium mt-4 mb-2" {...props} />,
+  p: ({ node, ...props }: CustomMarkdownComponentProps<HTMLParagraphElement>) => <p className="mb-4 leading-relaxed" {...props} />,
+  ul: ({ node, ...props }: CustomMarkdownComponentProps<HTMLUListElement>) => <ul className="list-disc pl-6 mb-4 space-y-1" {...props} />,
+  ol: ({ node, ...props }: CustomMarkdownComponentProps<HTMLOListElement>) => <ol className="list-decimal pl-6 mb-4 space-y-1" {...props} />,
+  li: ({ node, ...props }: CustomMarkdownComponentProps<HTMLLIElement>) => <li className="mb-1" {...props} />,
+  a: ({ node, ...props }: CustomMarkdownComponentProps<HTMLAnchorElement>) => <a className="text-blue-600 hover:underline dark:text-blue-400" target="_blank" rel="noopener noreferrer" {...props} />,
+  blockquote: ({ node, ...props }: CustomMarkdownComponentProps<HTMLQuoteElement>) => <blockquote className="border-l-4 border-gray-300 pl-4 italic text-gray-600 dark:border-gray-700 dark:text-gray-400 my-4" {...props} />,
+  code: ({ node, inline, ...props }: CustomMarkdownComponentProps<HTMLElement>) => (
+    <code className={`rounded-md px-1 py-0.5 text-sm ${inline ? "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200" : ""}`} {...props} />
+  ),
+  pre: ({ node, ...props }: CustomMarkdownComponentProps<HTMLPreElement>) => (
+    <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-x-auto my-4">
+      <code {...props} />
     </pre>
   ),
 };
@@ -45,6 +46,7 @@ const ContentDisplayCard: React.FC<ContentDisplayCardProps> = ({
   content,
   url,
   contentType,
+  image_url, // Destructure new prop
 }) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(content);
@@ -96,6 +98,11 @@ const ContentDisplayCard: React.FC<ContentDisplayCardProps> = ({
           </p>
         </CardHeader>
         <CardContent className="text-base">
+          {image_url && ( // Conditionally render image if image_url is present
+            <div className="mb-4">
+              <img src={image_url} alt="Generated cover" className="w-full h-auto rounded-md object-cover" />
+            </div>
+          )}
           <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
             {content}
           </ReactMarkdown>

@@ -12,12 +12,30 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable"; // Import resizable components
-import { useIsMobile } from "@/hooks/use-mobile"; // Import useIsMobile hook
+} from "@/components/ui/resizable";
+import { useIsMobile } from "@/hooks/use-mobile";
+import * as z from "zod"; // Import z for schema inference
+
+const contentTypes = ["blog", "x", "facebook", "linkedin", "newsletter"] as const;
+const aspectRatios = ["16:9", "1:1", "4:3"] as const;
+
+const formSchema = z.object({
+  url: z.string().url({ message: "Please enter a valid URL." }),
+  content_type: z.enum(contentTypes, {
+    required_error: "You need to select a content type.",
+  }),
+  image_prompt_override: z.string().optional().nullable(),
+  aspect_ratio: z.enum(aspectRatios, {
+    required_error: "You need to select an aspect ratio for the image.",
+  }).optional().nullable(),
+});
+
+type FormData = z.infer<typeof formSchema>;
 
 type GeneratedContent = {
   url: string;
   content_type: string;
+  image_url: string | null; // New field for the image URL
   content: {
     raw: string;
     pydantic: null;
@@ -31,20 +49,25 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const isMobile = useIsMobile(); // Use the hook to detect mobile
+  const isMobile = useIsMobile();
 
-  const handleSubmit = async (data: { url: string; content_type: string }) => {
+  const handleSubmit = async (data: FormData) => {
     setIsLoading(true);
     setGeneratedContent(null);
     setError(null);
 
     try {
-      const response = await fetch("https://167aliraza-crewai.hf.space/generate-content", {
+      const response = await fetch("https://167aliraza-crewai.hf.space/generate-content-with-image", { // Updated endpoint
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          url: data.url,
+          content_type: data.content_type,
+          image_prompt_override: data.image_prompt_override || null, // Pass new fields
+          aspect_ratio: data.aspect_ratio || null, // Pass new fields
+        }),
       });
 
       if (!response.ok) {
@@ -66,13 +89,7 @@ export default function Home() {
   const handleReset = () => {
     setGeneratedContent(null);
     setError(null);
-    // The form itself will reset its fields via form.reset() in ContentGeneratorForm
   };
-
-  // Removed mainClasses as the layout will be handled by ResizablePanelGroup or flex-col
-  // const mainClasses = `flex flex-col gap-8 items-center w-full p-6 sm:p-8 bg-card rounded-lg shadow-lg ${
-  //   generatedContent ? "max-w-4xl" : "max-w-xl"
-  // }`;
 
   const renderContent = () => (
     <>
@@ -102,6 +119,7 @@ export default function Home() {
           content={generatedContent.content.raw}
           url={generatedContent.url}
           contentType={generatedContent.content_type}
+          image_url={generatedContent.image_url} // Pass the new image_url prop
         />
       )}
     </>
@@ -109,20 +127,20 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-8 font-[family-name:var(--font-geist-sans)] bg-background text-foreground relative">
-      <div className="absolute top-4 right-4 z-10"> {/* Added z-10 to ensure it's above panels */}
+      <div className="absolute top-4 right-4 z-10">
         <ThemeToggle />
       </div>
       <motion.main
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full h-full max-w-7xl flex flex-col items-center justify-center" // Adjusted main to take full width and height
+        className="w-full h-full max-w-7xl flex flex-col items-center justify-center"
       >
-        {isMobile || !generatedContent ? ( // Stacked layout for mobile or before content is generated
+        {isMobile || !generatedContent ? (
           <div className="flex flex-col gap-8 items-center w-full p-6 sm:p-8 bg-card rounded-lg shadow-lg max-w-xl">
             {renderContent()}
           </div>
-        ) : ( // Resizable layout for desktop when content is generated
+        ) : (
           <ResizablePanelGroup
             direction="horizontal"
             className="min-h-[70vh] w-full max-w-7xl rounded-lg border bg-card shadow-lg"
@@ -153,6 +171,7 @@ export default function Home() {
                   content={generatedContent.content.raw}
                   url={generatedContent.url}
                   contentType={generatedContent.content_type}
+                  image_url={generatedContent.image_url} // Pass the new image_url prop
                 />
               )}
             </ResizablePanel>
