@@ -25,7 +25,7 @@ import {
 import { toast } from "sonner";
 
 const contentTypes = ["blog", "x", "facebook", "linkedin", "newsletter"] as const;
-const aspectRatios = ["16:9", "1:1", "4:3"] as const;
+const aspectRatios = ["16:9", "1:1", "4:5"] as const;
 
 const formSchema = z.object({
   url: z.string().url({ message: "Please enter a valid URL." }),

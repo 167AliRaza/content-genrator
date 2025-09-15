@@ -17,7 +17,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import * as z from "zod"; // Import z for schema inference
 
 const contentTypes = ["blog", "x", "facebook", "linkedin", "newsletter"] as const;
-const aspectRatios = ["16:9", "1:1", "4:3"] as const;
+const aspectRatios = ["16:9", "1:1", "4:5"] as const;
 
 const formSchema = z.object({
   url: z.string().url({ message: "Please enter a valid URL." }),
@@ -35,14 +35,8 @@ type FormData = z.infer<typeof formSchema>;
 type GeneratedContent = {
   url: string;
   content_type: string;
-  image_url: string | null; // New field for the image URL
-  content: {
-    raw: string;
-    pydantic: null;
-    json_dict: null;
-    tasks_output: any[];
-    token_usage: any;
-  };
+  image_url: string | null;
+  content: string; // backend now returns final_with_image as plain string
 };
 
 export default function Home() {
@@ -57,7 +51,7 @@ export default function Home() {
     setError(null);
 
     try {
-      const response = await fetch("https://167aliraza-crewai.hf.space/generate-content-with-image", { // Updated endpoint
+      const response = await fetch("https://167aliraza-crewai.hf.space//generate-content-with-image", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -65,8 +59,8 @@ export default function Home() {
         body: JSON.stringify({
           url: data.url,
           content_type: data.content_type,
-          image_prompt_override: data.image_prompt_override || null, // Pass new fields
-          aspect_ratio: data.aspect_ratio || null, // Pass new fields
+          image_prompt_override: data.image_prompt_override || null,
+          aspect_ratio: data.aspect_ratio || "16:9",
         }),
       });
 
@@ -77,8 +71,16 @@ export default function Home() {
         throw new Error(errorData.detail || "Failed to generate content.");
       }
 
-      const result: GeneratedContent = await response.json();
-      console.log("Raw API Result:", result);
+      const rawResult = await response.json();
+      console.log("Raw API Result:", rawResult);
+
+      // Normalize result to our expected shape
+      const result: GeneratedContent = {
+        url: rawResult.url,
+        content_type: rawResult.content_type,
+        image_url: rawResult.image_url ?? null,
+        content: typeof rawResult.content === "string" ? rawResult.content : (rawResult.content?.raw ?? ""),
+      };
 
       // Prepend base URL if image_url is a local static path
       if (result.image_url && result.image_url.startsWith("/static/")) {
@@ -142,9 +144,9 @@ export default function Home() {
               <div className="text-green-500 text-center p-4 bg-green-50 border border-green-200 rounded-md w-full max-w-md">
                 Content data received! Attempting to render...
               </div>
-              {generatedContent.content?.raw && (
+              {generatedContent.content && (
                 <ContentDisplayCard
-                  content={generatedContent.content.raw}
+                  content={generatedContent.content}
                   url={generatedContent.url}
                   contentType={generatedContent.content_type}
                   image_url={generatedContent.image_url}

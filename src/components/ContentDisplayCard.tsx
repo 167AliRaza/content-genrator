@@ -59,7 +59,7 @@ const ContentDisplayCard: React.FC<ContentDisplayCardProps> = ({
 
   // Clean the content string by removing the prepended image markdown or text reference
   const cleanedContent = React.useMemo(() => {
-    if (!image_url || !content) return content;
+    if (!content) return content;
 
     let tempContent = content;
 
@@ -81,7 +81,7 @@ const ContentDisplayCard: React.FC<ContentDisplayCardProps> = ({
     }
 
     return tempContent.trim();
-  }, [content, image_url]);
+  }, [content]);
 
   console.log("ContentDisplayCard cleanedContent:", cleanedContent);
 
