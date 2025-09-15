@@ -48,6 +48,9 @@ const ContentDisplayCard: React.FC<ContentDisplayCardProps> = ({
   contentType,
   image_url,
 }) => {
+  console.log("ContentDisplayCard received image_url:", image_url);
+  console.log("ContentDisplayCard received content (raw):", content);
+
   const handleCopy = () => {
     // Copy the original content including image markdown/text as the backend provides it
     navigator.clipboard.writeText(content);
@@ -68,15 +71,19 @@ const ContentDisplayCard: React.FC<ContentDisplayCardProps> = ({
 
     // Remove markdown image if present at the beginning
     if (markdownImageRegex.test(tempContent)) {
+      console.log("Removing markdown image from content.");
       tempContent = tempContent.replace(markdownImageRegex, '');
     }
     // Remove text image reference if present at the beginning
     else if (textImageRefRegex.test(tempContent)) {
+      console.log("Removing text image reference from content.");
       tempContent = tempContent.replace(textImageRefRegex, '');
     }
 
     return tempContent.trim();
   }, [content, image_url]);
+
+  console.log("ContentDisplayCard cleanedContent:", cleanedContent);
 
 
   const ContentTypeIcon = () => {
