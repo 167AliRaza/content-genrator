@@ -70,23 +70,29 @@ export default function Home() {
         }),
       });
 
+      console.log("API Response status:", response.status);
       if (!response.ok) {
         const errorData = await response.json();
+        console.error("API Error Data:", errorData);
         throw new Error(errorData.detail || "Failed to generate content.");
       }
 
       const result: GeneratedContent = await response.json();
+      console.log("Raw API Result:", result);
 
       // Prepend base URL if image_url is a local static path
       if (result.image_url && result.image_url.startsWith("/static/")) {
         result.image_url = `https://167aliraza-crewai.hf.space${result.image_url}`;
+        console.log("Adjusted image_url:", result.image_url);
       }
 
       setGeneratedContent(result);
+      console.log("Generated content state set:", result);
       toast.success("Content generated successfully!");
     } catch (err: any) {
       setError(err.message);
       toast.error(err.message);
+      console.error("Caught error during content generation:", err);
     } finally {
       setIsLoading(false);
     }
