@@ -49,7 +49,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const isMobile = useIsMobile();
+  const isMobile = useIsMobile(); // Keep the hook, but temporarily bypass its effect on rendering
 
   const handleSubmit = async (data: FormData) => {
     setIsLoading(true);
@@ -103,40 +103,6 @@ export default function Home() {
     setError(null);
   };
 
-  const renderContent = () => (
-    <>
-      <h1 className="text-3xl font-bold text-center text-foreground">
-        AI Content Generator
-      </h1>
-      <p className="text-center text-muted-foreground max-w-prose">
-        Enter a URL and select a content type to generate engaging text for your blog, social media, or newsletter.
-      </p>
-
-      <ContentGeneratorForm onSubmit={handleSubmit} onReset={handleReset} isLoading={isLoading} />
-
-      {isLoading && <LoadingSpinner />}
-
-      {error && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-red-500 text-center p-4 bg-red-50 border border-red-200 rounded-md w-full max-w-md"
-        >
-          Error: {error}
-        </motion.div>
-      )}
-
-      {generatedContent && generatedContent.content?.raw && (
-        <ContentDisplayCard
-          content={generatedContent.content.raw}
-          url={generatedContent.url}
-          contentType={generatedContent.content_type}
-          image_url={generatedContent.image_url} // Pass the new image_url prop
-        />
-      )}
-    </>
-  );
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-8 font-[family-name:var(--font-geist-sans)] bg-background text-foreground relative">
       <div className="absolute top-4 right-4 z-10">
@@ -148,47 +114,45 @@ export default function Home() {
         transition={{ duration: 0.5 }}
         className="w-full h-full max-w-7xl flex flex-col items-center justify-center"
       >
-        {isMobile || !generatedContent ? (
-          <div className="flex flex-col gap-8 items-center w-full p-6 sm:p-8 bg-card rounded-lg shadow-lg max-w-xl">
-            {renderContent()}
-          </div>
-        ) : (
-          <ResizablePanelGroup
-            direction="horizontal"
-            className="min-h-[70vh] w-full max-w-7xl rounded-lg border bg-card shadow-lg"
-          >
-            <ResizablePanel defaultSize={40} minSize={30} className="p-6 flex flex-col items-center gap-8 overflow-auto">
-              <h1 className="text-3xl font-bold text-center text-foreground">
-                AI Content Generator
-              </h1>
-              <p className="text-center text-muted-foreground max-w-prose">
-                Enter a URL and select a content type to generate engaging text for your blog, social media, or newsletter.
-              </p>
-              <ContentGeneratorForm onSubmit={handleSubmit} onReset={handleReset} isLoading={isLoading} />
-              {isLoading && <LoadingSpinner />}
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-red-500 text-center p-4 bg-red-50 border border-red-200 rounded-md w-full max-w-md"
-                >
-                  Error: {error}
-                </motion.div>
-              )}
-            </ResizablePanel>
-            <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={60} minSize={40} className="p-6 overflow-auto">
-              {generatedContent && generatedContent.content?.raw && (
+        <div className="flex flex-col gap-8 items-center w-full p-6 sm:p-8 bg-card rounded-lg shadow-lg max-w-xl">
+          <h1 className="text-3xl font-bold text-center text-foreground">
+            AI Content Generator
+          </h1>
+          <p className="text-center text-muted-foreground max-w-prose">
+            Enter a URL and select a content type to generate engaging text for your blog, social media, or newsletter.
+          </p>
+
+          <ContentGeneratorForm onSubmit={handleSubmit} onReset={handleReset} isLoading={isLoading} />
+
+          {isLoading && <LoadingSpinner />}
+
+          {error && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-red-500 text-center p-4 bg-red-50 border border-red-200 rounded-md w-full max-w-md"
+            >
+              Error: {error}
+            </motion.div>
+          )}
+
+          {/* Simplified rendering: If generatedContent exists, show a placeholder and then the card */}
+          {generatedContent && (
+            <>
+              <div className="text-green-500 text-center p-4 bg-green-50 border border-green-200 rounded-md w-full max-w-md">
+                Content data received! Attempting to render...
+              </div>
+              {generatedContent.content?.raw && (
                 <ContentDisplayCard
                   content={generatedContent.content.raw}
                   url={generatedContent.url}
                   contentType={generatedContent.content_type}
-                  image_url={generatedContent.image_url} // Pass the new image_url prop
+                  image_url={generatedContent.image_url}
                 />
               )}
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        )}
+            </>
+          )}
+        </div>
         <MadeWithDyad />
       </motion.main>
     </div>
