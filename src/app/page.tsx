@@ -76,6 +76,12 @@ export default function Home() {
       }
 
       const result: GeneratedContent = await response.json();
+
+      // Prepend base URL if image_url is a local static path
+      if (result.image_url && result.image_url.startsWith("/static/")) {
+        result.image_url = `https://167aliraza-crewai.hf.space${result.image_url}`;
+      }
+
       setGeneratedContent(result);
       toast.success("Content generated successfully!");
     } catch (err: any) {

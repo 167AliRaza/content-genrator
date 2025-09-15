@@ -46,12 +46,38 @@ const ContentDisplayCard: React.FC<ContentDisplayCardProps> = ({
   content,
   url,
   contentType,
-  image_url, // Destructure new prop
+  image_url,
 }) => {
   const handleCopy = () => {
+    // Copy the original content including image markdown/text as the backend provides it
     navigator.clipboard.writeText(content);
     toast.success("Content copied to clipboard!");
   };
+
+  // Clean the content string by removing the prepended image markdown or text reference
+  const cleanedContent = React.useMemo(() => {
+    if (!image_url || !content) return content;
+
+    let tempContent = content;
+
+    // Regex to match markdown image syntax: ![alt text](url)
+    // This regex is more specific to ensure it only matches if the URL matches image_url
+    const markdownImageRegex = new RegExp(`^!\\[.*?\\]\\(${image_url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\)\\n*\\n*`);
+    // Regex to match "Image: url" text
+    const textImageRefRegex = new RegExp(`^Image: ${image_url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\n*\\n*`);
+
+    // Remove markdown image if present at the beginning
+    if (markdownImageRegex.test(tempContent)) {
+      tempContent = tempContent.replace(markdownImageRegex, '');
+    }
+    // Remove text image reference if present at the beginning
+    else if (textImageRefRegex.test(tempContent)) {
+      tempContent = tempContent.replace(textImageRefRegex, '');
+    }
+
+    return tempContent.trim();
+  }, [content, image_url]);
+
 
   const ContentTypeIcon = () => {
     switch (contentType) {
@@ -104,7 +130,7 @@ const ContentDisplayCard: React.FC<ContentDisplayCardProps> = ({
             </div>
           )}
           <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-            {content}
+            {cleanedContent} {/* Use the cleaned content here */}
           </ReactMarkdown>
         </CardContent>
       </Card>
