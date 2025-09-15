@@ -63,11 +63,11 @@ const ContentDisplayCard: React.FC<ContentDisplayCardProps> = ({
 
     let tempContent = content;
 
-    // Regex to match markdown image syntax: ![alt text](url)
-    // This regex is more specific to ensure it only matches if the URL matches image_url
-    const markdownImageRegex = new RegExp(`^!\\[.*?\\]\\(${image_url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\)\\n*\\n*`);
-    // Regex to match "Image: url" text
-    const textImageRefRegex = new RegExp(`^Image: ${image_url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\n*\\n*`);
+    // Regex to match markdown image syntax: ![alt text](url) at the beginning
+    // This is more general and doesn't require the exact image_url to be in the markdown
+    const markdownImageRegex = /^!\\[.*?\\]\\(.*?\\)\\n*\\n*/;
+    // Regex to match "Image: url" text at the beginning
+    const textImageRefRegex = /^Image: .*?\\n*\\n*/;
 
     // Remove markdown image if present at the beginning
     if (markdownImageRegex.test(tempContent)) {
