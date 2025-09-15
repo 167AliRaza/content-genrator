@@ -51,7 +51,7 @@ export default function Home() {
     setError(null);
 
     try {
-      const response = await fetch("https://167aliraza-crewai.hf.space//generate-content-with-image", {
+      const response = await fetch("https://167aliraza-crewai.hf.space/generate-content-with-image", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
